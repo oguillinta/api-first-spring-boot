@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+    id 'org.openapi.generator' version '7.0.1'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.iogui.apps'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot Dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // OpenAPI/Swagger Dependencies
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+
+    // Swagger Annotations
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.15'
+
+    // Spring Security + OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "${project.rootDir}/src/main/resources/api/openapi.yaml"
+    outputDir = "${layout.buildDirectory.get()}/generated"
+    apiPackage = "com.iogui.apps.loans.evaluation.api"
+    modelPackage = "com.iogui.apps.loans.evaluation.model"
+
+    configOptions = [
+            sourceFolder        : "src/gen/java/main",
+            useSpringBoot3      : "true",
+            interfaceOnly       : "true",
+            useJakartaEe        : "true",
+            skipDefaultInterface: "true",
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/src/gen/java/main"
+        }
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn tasks.named('openApiGenerate')
+}
+
+test {
+    useJUnitPlatform()
+}
+

@@ -1,0 +1,38 @@
+server:
+  port: 9091
+  servlet.context-path: /loans-evaluation-api
+
+spring:
+  application:
+    name: loans-evaluation-api
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/loan_evaluation_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username:
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  # Keycloak
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/loan-realm/protocol/openid-connect/certs
+
+keycloak:
+  resource: loans-evaluation-api
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
